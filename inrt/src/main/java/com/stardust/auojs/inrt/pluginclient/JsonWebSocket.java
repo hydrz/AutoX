@@ -47,13 +47,15 @@ public class JsonWebSocket {
     private volatile boolean mClosed = false;
 
     public JsonWebSocket(OkHttpClient client, String url) {
+        JsonWebSocket jsonWebSocket = this;
+
         Config config = new Config.Builder()
                 .setShowLog(true)           //show  log
                 .setClient(client)   //if you want to set your okhttpClient
                 .setShowLog(true, "inrt.connect")
-
                 .setReconnectInterval(2, TimeUnit.SECONDS)  //set reconnect interval
                 .build();
+
         RxWebSocket.setConfig(config);
         RxWebSocket.get(url)
                 .subscribe(new WebSocketSubscriber() {
@@ -62,6 +64,7 @@ public class JsonWebSocket {
                         Log.d(LOG_TAG, "----链接打开----");
                         mWebSocket = webSocket;
                         DevPluginService.getInstance().connectionOnNext("连接成功");
+                        DevPluginService.getInstance().sayHelloToServer(jsonWebSocket);
                     }
 
                     @Override
@@ -87,7 +90,6 @@ public class JsonWebSocket {
                         DevPluginService.getInstance().connectionOnNext("已关闭");
                     }
                 });
-
     }
 
     public Observable<JsonElement> data() {
@@ -128,7 +130,6 @@ public class JsonWebSocket {
         } catch (JsonParseException e) {
             e.printStackTrace();
         }
-
     }
 
     public boolean isClosed() {

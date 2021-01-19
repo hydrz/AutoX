@@ -39,20 +39,26 @@ if (!packageName) {
     toast('未安装' + appName + ', 开始安装');
     importClass(java.io.File);
     importClass(com.stardust.util.IntentUtil);
-    importClass(org.autojs.autojs.Pref);
-    importClass(org.autojs.autojs.network.download.DownloadManager);
-    importClass(org.autojs.autojs.external.fileprovider.AppFileProvider);
+    importClass(com.stardust.auojs.inrt.Pref);
 
     var fileName = appName + '.apk';
-    var path = new File(Pref.getScriptDirPath(), fileName).getPath();
-    var res = DownloadManager.getInstance().download(downloadUrl, path);
-    while (!res.hasComplete()) {
-        sleep(3000);
-    };
-    IntentUtil.installApkOrToast(context, path, AppFileProvider.AUTHORITY)
+    var file = new File(Pref.getScriptDirPath(), fileName);
+    if (file.exists()) {
+        file.delete();
+    }
+    var path = file.getPath()
+    var f = java.io.FileOutputStream(path);
+    f.write(http.get(downloadUrl).body.bytes());
+    f.close();
+    IntentUtil.installApkOrToast(context, path, "com.stardust.auojs.inrt.lshfileprovider")
     toast('等待' + appName + '安装结束');
     sleep(3000);
-    click(775, 1850);
+
+    if (text('本次允许')) { 
+
+    }
+
+
 }
 
 while (!packageName) {

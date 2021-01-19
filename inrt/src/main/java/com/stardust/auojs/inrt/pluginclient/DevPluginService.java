@@ -41,7 +41,7 @@ public class DevPluginService {
     private static final String TYPE_HELLO = "hello";
     private static final String TYPE_BYTES_COMMAND = "bytes_command";
     private static final long HANDSHAKE_TIMEOUT = 10 * 1000;
-    private static String tmpMessageId="";
+    private static String tmpMessageId = "";
 
     public static class State {
 
@@ -115,7 +115,7 @@ public class DevPluginService {
         return mConnectionState;
     }
 
-    public void connectionOnNext(String msg){
+    public void connectionOnNext(String msg) {
         mConnectionState.onNext(new State(State.DISCONNECTED, new SocketTimeoutException(msg)));
     }
 
@@ -137,7 +137,7 @@ public class DevPluginService {
     @AnyThread
     private Observable<JsonWebSocket> socket(String ip, int port, String params) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .pingInterval(2,TimeUnit.SECONDS)
+                .pingInterval(2, TimeUnit.SECONDS)
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .build();
         String url = ip + ":" + port;
@@ -145,8 +145,8 @@ public class DevPluginService {
             url = "ws://" + url;
         }
         url = url + "?" + params;
-        JsonWebSocket jsonWebSocket =new JsonWebSocket(client, url);
-        mSocket =jsonWebSocket;
+        JsonWebSocket jsonWebSocket = new JsonWebSocket(client, url);
+        mSocket = jsonWebSocket;
         subscribeMessage(mSocket);
         return Observable.just(jsonWebSocket);
     }
@@ -181,21 +181,26 @@ public class DevPluginService {
         }
         try {
             JsonObject obj = element.getAsJsonObject();
-            String tmp =obj.get("message_id").getAsString();
-            if(tmpMessageId.equals(tmp)){
-                Log.w(LOG_TAG, "重复消息id=>" + tmp);
-                return;
-            }
-            tmpMessageId=tmp;
             JsonElement typeElement = obj.get("type");
             if (typeElement == null || !typeElement.isJsonPrimitive()) {
                 return;
             }
+
             String type = typeElement.getAsString();
             if (type.equals(TYPE_HELLO)) {
                 onServerHello(jsonWebSocket, obj);
                 return;
             }
+
+            if (obj.has("message_id")) {
+                String tmp = obj.get("message_id").getAsString();
+                if (tmpMessageId.equals(tmp)) {
+                    Log.w(LOG_TAG, "重复消息id=>" + tmp);
+                    return;
+                }
+                tmpMessageId = tmp;
+            }
+
             if (TYPE_BYTES_COMMAND.equals(type)) {
                 String md5 = obj.get("md5").getAsString();
                 JsonWebSocket.Bytes bytes = mBytes.remove(md5);
@@ -235,7 +240,7 @@ public class DevPluginService {
     }
 
     @WorkerThread
-    private void sayHelloToServer(JsonWebSocket socket) {
+    public void sayHelloToServer(JsonWebSocket socket) {
         Log.i(LOG_TAG, "inrt sayHelloToServer");
 
         writeMap(socket, TYPE_HELLO, new MapBuilder<String, Object>()
@@ -261,10 +266,16 @@ public class DevPluginService {
     @MainThread
     private void onServerHello(JsonWebSocket jsonWebSocket, JsonObject message) {
         Log.i(LOG_TAG, "onServerHello: " + message);
-        String msg = message.get("data").getAsString();
+        String msg = "连接成功";
+
+        if (!message.get("data").isJsonObject()) {
+            msg = message.get("data").getAsString();
+        }
+
         if (!"连接成功".equals(msg)) {
             disconnectIfNeeded();
         }
+
         mSocket = jsonWebSocket;
         mConnectionState.onNext(new State(State.CONNECTED, new SocketTimeoutException(msg)));
     }
