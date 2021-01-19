@@ -15,8 +15,6 @@ import androidx.appcompat.widget.Toolbar
  */
 
 class SettingsActivity : AppCompatActivity() {
-
-
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupViews()
@@ -47,7 +45,4 @@ class SettingsActivity : AppCompatActivity() {
             return super.onPreferenceTreeClick(preferenceScreen, preference)
         }
     }
-
-
-
 }

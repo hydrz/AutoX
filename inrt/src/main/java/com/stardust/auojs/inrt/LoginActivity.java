@@ -27,7 +27,6 @@ import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.autojs.AccessibilityServiceTool;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.auojs.inrt.pluginclient.DevPluginService;
-import com.stardust.auojs.inrt.util.UpdateUtil;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -58,7 +57,6 @@ public class LoginActivity extends AppCompatActivity {
                         setTvInfo();
                     }
                 });
-        checkVersion();
     }
 
 
@@ -98,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setTvInfo() {
-        String format = "code:%s \r\n IMEI:%s  \r\n 状态:%s ";
+        String format = "Code:%s \r\nIMEI:%s  \r\n状态:%s ";
         String info = String.format(format, code, imei, status);
         infoTv.setText(info);
     }
@@ -152,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private String getIMEI() {
         if (checkPermission()) {
-            return "错误数据";
+            return "";
         }
         String deviceId = null;
         TelephonyManager tm = (TelephonyManager) this.getApplication().getSystemService(TELEPHONY_SERVICE);
@@ -206,12 +204,4 @@ public class LoginActivity extends AppCompatActivity {
         }
         return true;
     }
-
-
-    private void checkVersion() {
-        UpdateUtil updateUtil = new UpdateUtil(this);
-        updateUtil.checkUpdate();
-    }
-
-
 }

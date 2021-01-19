@@ -27,6 +27,8 @@ public class Pref {
     private static final String KEY_EDITOR_THEME = "editor.theme";
     private static final String KEY_EDITOR_TEXT_SIZE = "editor.textSize";
 
+    private static final String DEFAULT_DEV_HOST = "192.168.2.29";
+
     private static SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences p, String key) {
@@ -92,6 +94,7 @@ public class Pref {
     }
 
     public static String getServerAddressOrDefault(String defaultAddress) {
+        defaultAddress = DEFAULT_DEV_HOST;
         return def().getString(KEY_SERVER_ADDRESS, defaultAddress);
     }
 

@@ -1,8 +1,11 @@
 name: Android CI
-on: [push,pull_request]
+
+on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v1
     - name: set up JDK 1.8
@@ -10,6 +13,11 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: chmod 777 ./gradlew && ./gradlew :inrt:assemble &&  ./gradlew inrt:cp2APP && ./gradlew :app:assembleRelease
+      run: chmod 777 ./gradlew && ./gradlew :inrt:assembleRelease && find inrt/build/outputs
+    - name: Upload apk
+      uses: actions/upload-artifact@v1
+      with:
+        name: app-armeabi-v7a-release-unsigned.apk
+        path: inrt/build/outputs/apk/release/inrt-armeabi-v7a-release-unsigned.apk
 
 

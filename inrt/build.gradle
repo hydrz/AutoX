@@ -4,13 +4,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-
-
-File propFile =new File("E:/资料/jks/autojs-inrt/sign.properties");
-Properties properties = new Properties()
-if(propFile.exists()){
-    properties.load(new InputStreamReader(new FileInputStream(propFile), Charset.forName("utf-8")))
-}
 android {
     compileSdkVersion versions.compile
     buildToolsVersion versions.buildTool
@@ -24,7 +17,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 //        buildConfigField "boolean","isMarket","true" // 这是有注册码的版本
-        buildConfigField "boolean","isMarket","false"
+        buildConfigField "boolean","isMarket","true"
     }
     lintOptions {
         abortOnError false
@@ -36,10 +29,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     splits {
-
         // Configures multiple APKs based on ABI.
         abi {
-
             // Enables building multiple APKs per ABI.
             enable true
 
@@ -56,85 +47,16 @@ android {
             universalApk false
         }
     }
-    signingConfigs {
-        if(propFile.exists()) {
-            release {
-                keyAlias properties['keyAlias']
-                keyPassword properties['keyPassword']
-                storeFile file(properties['storeFile'])
-                storePassword properties['storePassword']
-            }
-        }
-    }
     buildTypes {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if(propFile.exists()) {
-                signingConfig signingConfigs.release
-            }
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if(propFile.exists()) {
-                signingConfig signingConfigs.release
-            }
         }
     }
-
-}
-task publishApp(group: 'build') {
-    println "publish app"
-    println "$rootDir"
-    doLast {
-        exec {
-            //切换到sh文件所在的目录，执行脚本
-            workingDir "E:/资料/jks/shell"
-            //修改命令输出的地方，默认为控制台
-            standardOutput = out
-            //执行shell脚本
-            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                executable 'cmd'
-                args '/c', "node scnode.js $projectDir\\build\\outputs\\apk\\release $rootDir 22"
-            } else {
-                commandLine 'sh', '-c', "node scnode.js $projectDir\\build\\outputs\\apk\\release $rootDir 22"
-            }
-        }
-    }
-}
-
-
-def buildApkPluginForAbi(File pluginProjectDir, String abi) {
-    copy {
-        from file('build\\outputs\\apk\\release\\')
-        into new File(pluginProjectDir, 'src\\main\\assets')
-        def fileName = "inrt-" + abi + "-release.apk"
-        include fileName
-        rename fileName, 'template.apk'
-    }
-    println 'app cp 完成'
-}
-
-task cp2APP(group: 'build') {
-    doLast {
-        def pluginProjectDirPath = '..\\app'
-        def pluginProjectDir = file(pluginProjectDirPath)
-        if (!pluginProjectDir.exists() || !pluginProjectDir.isDirectory()) {
-            println 'app 目录 not exists'
-            return
-        }
-        buildApkPluginForAbi(pluginProjectDir, 'armeabi-v7a')
-     //   buildApkPluginForAbi(pluginProjectDir, 'x86')
-    }
-}
-
-
-
-
-tasks.whenTaskAdded { task ->
-    println("=================task "+task.name+" added=================")
-
 }
 
 repositories {
