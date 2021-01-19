@@ -228,6 +228,8 @@ public class DevPluginService {
 
     @WorkerThread
     private void sayHelloToServer(JsonWebSocket socket) {
+        Log.i(LOG_TAG, "sayHelloToServer");
+
         writeMap(socket, TYPE_HELLO, new MapBuilder<String, Object>()
                 .put("device_name", Build.BRAND + " " + Build.MODEL)
                 .put("client_version", CLIENT_VERSION)

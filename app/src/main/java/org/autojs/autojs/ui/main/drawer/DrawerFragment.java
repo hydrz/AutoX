@@ -142,6 +142,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.connectRemoteHost();
         mConnectionStateDisposable = DevPluginService.getInstance().connectionState()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(state -> {
@@ -302,7 +303,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     void connectOrDisconnectToRemote(DrawerMenuItemViewHolder holder) {
         boolean checked = holder.getSwitchCompat().isChecked();
         boolean connected = DevPluginService.getInstance().isConnected();
-        if (checked && !connected) {
+        if (!connected) {
             inputRemoteHost();
         } else if (!checked && connected) {
             DevPluginService.getInstance().disconnectIfNeeded();
@@ -392,8 +393,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 .cancelListener(dialog -> setChecked(mConnectionItem, false))
                 .show();
     }
-
-
 
     private void onConnectException(Throwable e) {
         setChecked(mConnectionItem, false);
@@ -583,4 +582,11 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         return AccessibilityServiceTool.isAccessibilityServiceEnabled(getActivity());
     }
 
+    private void connectRemoteHost() {
+        String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
+        String code = Pref.getCode("2");
+        String params="iemi="+getIMEI()+"&usercode="+code;
+        DevPluginService.getInstance().connectToServer(host, params)
+                .subscribe(Observers.emptyConsumer(), this::onConnectException);
+    }
 }

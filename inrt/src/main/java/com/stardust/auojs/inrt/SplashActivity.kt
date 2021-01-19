@@ -18,7 +18,6 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.linsh.utilseverywhere.IntentUtils
 import com.stardust.auojs.inrt.autojs.AutoJs
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher
-import com.stardust.auojs.inrt.util.UpdateUtil
 import com.stardust.util.IntentUtil
 import ezy.assist.compat.SettingsCompat
 import java.util.*
@@ -39,13 +38,13 @@ class SplashActivity : AppCompatActivity() {
         if (!Pref.isFirstUsing()) {//不是第一次
             main()
         } else {
-            Pref.setHost("112.74.161.35")
+            Pref.setCode("xyhan")
+            Pref.setHost("autojs.xyhan.cn")
             if (!BuildConfig.isMarket) {
                 Handler().postDelayed({ this@SplashActivity.main() }, INIT_TIMEOUT)
             }
         }
     }
-
 
     private fun main() {
         checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -53,7 +52,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun manageDrawOverlays() {
-        var dialog = MaterialDialog.Builder(this).title("提示").content("请打开所有的权限，\r\n 省电策略选【不限制】")//内容
+        var dialog = MaterialDialog.Builder(this).title("提示").content("请打开所有权限\r\n 允许应用在后台弹出")//内容
                 .positiveText("确定") //肯定按键
                 .onPositive { dialog, which ->
                     SettingsCompat.manageDrawOverlays(this);
@@ -63,7 +62,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun manageWriteSettings() {
-        var dialog = MaterialDialog.Builder(this).title("继续进入权限设置").content("请打开所有权限!\r\n 请打开所有权限 \r\n 请打开所有权限")//内容
+        var dialog = MaterialDialog.Builder(this).title("继续进入权限设置").content("请打开所有权限\r\n 省电策略选【不限制】")//内容
                 .positiveText("确定") //肯定按键
                 .onPositive { dialog, which ->
                     IntentUtil.goToAppDetailSettings(this);
@@ -92,7 +91,6 @@ class SplashActivity : AppCompatActivity() {
         }
         Thread {
             try {
-
                 Thread.sleep(2000);
                 GlobalProjectLauncher.launch(this)
                 this.finish();
