@@ -1,3 +1,0 @@
-{
-    "vue-i18n.i18nPaths": "common/src/main/java/com/stardust/lang,common/build/intermediates/javac/debug/classes/com/stardust/lang,common/build/intermediates/javac/release/classes/com/stardust/lang"
-}
