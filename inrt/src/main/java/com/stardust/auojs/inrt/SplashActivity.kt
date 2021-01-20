@@ -52,8 +52,8 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun manageDrawOverlays() {
-        var dialog = MaterialDialog.Builder(this).title("提示").content("请打开所有权限\r\n 允许应用在后台弹出")//内容
-                .positiveText("确定") //肯定按键
+        var dialog = MaterialDialog.Builder(this).title("提示").content("请打开所有权限\r\n允许应用在后台弹出")//内容
+                .positiveText("确定") //确定按键
                 .onPositive { dialog, which ->
                     SettingsCompat.manageDrawOverlays(this);
                 }.canceledOnTouchOutside(false)
@@ -62,8 +62,8 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun manageWriteSettings() {
-        var dialog = MaterialDialog.Builder(this).title("继续进入权限设置").content("请打开所有权限\r\n 省电策略选【不限制】")//内容
-                .positiveText("确定") //肯定按键
+        var dialog = MaterialDialog.Builder(this).title("继续进入权限设置").content("请打开所有权限\r\n自启动\r\n省电策略选【不限制\r\n允许安装未知来源应用")//内容
+                .positiveText("确定") //确定按键
                 .onPositive { dialog, which ->
                     IntentUtil.goToAppDetailSettings(this);
                 }.canceledOnTouchOutside(false)
@@ -73,7 +73,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun AccessibilitySetting() {
         var dialog = MaterialDialog.Builder(this).title("提示").content("请打开无障碍服务")//内容
-                .positiveText("确定") //肯定按键
+                .positiveText("确定") //确定按键
                 .onPositive { dialog, which ->
                     IntentUtils.gotoAccessibilitySetting();
                 }.canceledOnTouchOutside(false)
