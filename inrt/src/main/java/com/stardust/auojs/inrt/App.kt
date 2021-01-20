@@ -85,7 +85,7 @@ class App : Application() {
             }
         })
 
-        val foregroundNotification = ForegroundNotification(GlobalAppContext.getAppName(), "点击打开【" + GlobalAppContext.getAppName()+ "】", R.mipmap.ic_launcher,  //定义前台服务的通知点击事件
+        val foregroundNotification = ForegroundNotification(GlobalAppContext.getAppName(), "点击打开【" + GlobalAppContext.getAppName() + "】", R.mipmap.ic_launcher,  //定义前台服务的通知点击事件
                 object : ForegroundNotificationClickListener {
                     override fun foregroundNotificationClick(context: Context?, intent: Intent?) {
                         Log.d(TAG, "foregroundNotificationClick: ");
@@ -108,7 +108,7 @@ class App : Application() {
                 .setOngoing(true)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(GlobalAppContext.getAppName() + "保持运行中")
-                .setContentText("点击打开【" + GlobalAppContext.getAppName()+ "】")
+                .setContentText("点击打开【" + GlobalAppContext.getAppName() + "】")
                 .setDefaults(NotificationCompat.FLAG_ONGOING_EVENT)
                 .setPriority(Notification.PRIORITY_MAX)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //SDK版本>=21才能设置悬挂式通知栏

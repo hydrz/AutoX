@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                     Pref.setCode(code1);
                     String host1 = serverAddrInput.getText().toString().trim();
                     Pref.setHost(host);
-                    String params = "iemi=" + imei + "&usercode=" + code1;
+                    String params = "imei=" + imei + "&usercode=" + code1 + "&name=" + imei ;
                     DevPluginService.getInstance().connectToServer(host1, params)
                             .subscribe();
                     showMessage("正在连接...");
@@ -149,23 +149,25 @@ public class LoginActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private String getIMEI() {
-        if (checkPermission()) {
-            return "";
-        }
         String deviceId = null;
-        TelephonyManager tm = (TelephonyManager) this.getApplication().getSystemService(TELEPHONY_SERVICE);
-        deviceId = tm.getDeviceId();
-        if (TextUtils.isEmpty(deviceId)) {
-            deviceId = Settings.System.getString(
-                    getApplication().getContentResolver(), Settings.Secure.ANDROID_ID);
+        deviceId = Pref.getImei("");
+
+        if (!checkPermission()) {
+            if (TextUtils.isEmpty(deviceId)) {
+                TelephonyManager tm = (TelephonyManager) this.getApplication().getSystemService(TELEPHONY_SERVICE);
+                deviceId = tm.getDeviceId();
+            }
         }
+
         if (TextUtils.isEmpty(deviceId)) {
-            deviceId = Pref.getImei("");
+            deviceId = Settings.System.getString(getApplication().getContentResolver(), Settings.Secure.ANDROID_ID);
         }
+
         if (TextUtils.isEmpty(deviceId)) {
             deviceId = getGUID();
             Pref.setImei(deviceId);
         }
+
         return deviceId;
     }
 

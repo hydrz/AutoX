@@ -37,28 +37,54 @@ var packageName = getPackageName(appName);
 if (!packageName) {
     toast('未安装' + appName + ', 开始安装');
     importClass(java.io.File);
+    importClass(android.os.Environment);
     importClass(com.stardust.util.IntentUtil);
     importClass(com.stardust.auojs.inrt.Pref);
+    importClass(android.app.DownloadManager);
 
     var fileName = appName + '.apk';
-    var file = new File(Pref.getScriptDirPath(), fileName);
+    var file = new File(Environment.getExternalStoragePublicDirectory("Download"), fileName);
     if (file.exists()) {
         file.delete();
     }
-    var path = file.getPath()
-    var f = java.io.FileOutputStream(path);
-    f.write(http.get(downloadUrl).body.bytes());
-    f.close();
-    IntentUtil.installApkOrToast(context, path, "com.stardust.auojs.inrt.lshfileprovider")
+    var manager = context.getSystemService(context.DOWNLOAD_SERVICE);
+    var request = DownloadManager.Request(android.net.Uri.parse(downloadUrl));
+    request.setDestinationInExternalPublicDir("Download", fileName);
+    var downloadId = manager.enqueue(request);
+    sleep(10000);
+    var query = new DownloadManager.Query().setFilterById(downloadId);
+    var cursor = manager.query(query);
+    if (cursor.moveToFirst()) {
+        var status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+        while (DownloadManager.STATUS_SUCCESSFUL != status) {
+            toast(status);
+            sleep(1000);
+        }
+        toast(status);
+    }
+
+    IntentUtil.installApkOrToast(context, file.getPath(), "com.stardust.auojs.inrt.lshfileprovider")
     toast('等待' + appName + '安装结束');
     sleep(3000);
 
-    if (text('本次允许')) {
+    if (text('本次允许').exists()) {
         text('本次允许').click();
-        sleep(400);
+        sleep(1000);
+    }
+
+    if (text('允许').exists()) {
+        text('允许').click();
+        sleep(1000);
+    }
+
+    if (text('继续安装').exists()) {
         text('继续安装').click();
-    } else if (text('安装')) {
+        sleep(1000);
+    }
+
+    if (text('安装').exists()) {
         text('安装').click();
+        sleep(1000);
     }
 }
 
@@ -68,7 +94,7 @@ while (!packageName) {
     if (packageName) {
         toast('安装完成');
         sleep(3000);
-        if (text('完成')) {
+        if (text('完成').exists()) {
             text('完成').click();
         }
         sleep(1000);
@@ -108,6 +134,8 @@ if (text('允许').exists()) {
 
 waitForPackage(packageName);
 toast(appName + '已启动');
+
+sleep(3000);
 
 if (text('同意').exists()) {
     text('同意').click();
@@ -155,7 +183,7 @@ for (var i = 1; i <= 20; i++) {
     if (text(menu).exists()) {
         let b = text(menu).findOne().bounds();
         click(b.centerX(), b.centerY());
-        sleep(1000);
+        sleep(5000);
         // 刷新一次
         swipe(500, 500, 500, 1500, 1000);
         sleep(5000);
